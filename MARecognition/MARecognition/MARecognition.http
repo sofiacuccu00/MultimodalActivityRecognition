@@ -1,0 +1,6 @@
+@MARecognition_HostAddress = http://localhost:5287
+
+GET {{MARecognition_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
