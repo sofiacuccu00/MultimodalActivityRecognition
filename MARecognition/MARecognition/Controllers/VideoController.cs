@@ -35,6 +35,29 @@ namespace MARecognition.Controllers
 
             return Ok(new { message = "Video processed", totalFrames = frameCount });
         }
+
+        [HttpPost("analyze")]
+        public async Task<IActionResult> AnalyzeVideo([FromQuery] string modelName = "gemma3:1b")
+        {
+            string framesFolder = Path.Combine("data", "frames");
+
+            // Controllo cartella frame
+            if (!Directory.Exists(framesFolder))
+                return BadRequest("No frames found. Upload and extract frames first.");
+
+            var frameFiles = Directory.GetFiles(framesFolder, "*.jpg");
+            if (frameFiles.Length < 3)
+                return BadRequest("Not enough frames to analyze (minimum 3 required).");
+
+            // Instanzia VideoAnalyzer
+            var analyzer = new VideoAnalyzerService(modelName);
+
+            // Chiama il servizio
+            var eventLog = await analyzer.RecognizeVideoActions(framesFolder, frameFiles.Length);
+
+            return Ok(eventLog);
+        }
     }
+
 
 }
