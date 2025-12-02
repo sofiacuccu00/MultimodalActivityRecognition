@@ -26,7 +26,7 @@
             {
                 if (frameNumber % frameInterval == 0)
                 {
-                    // Ridimensiona il frame
+                    // fix frame dimension
                     Cv2.Resize(frame, frame, new Size(256, 256));
                     string filePath = Path.Combine(outputFolder, $"frame_{savedFrames:D4}.jpg");
                     Cv2.ImWrite(filePath, frame);

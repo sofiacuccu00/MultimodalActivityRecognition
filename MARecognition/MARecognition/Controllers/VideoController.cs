@@ -29,7 +29,7 @@ namespace MARecognition.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            // Estrazione frame
+            // Frame extraction
             string framesFolder = Path.Combine("data", "frames");
             int frameCount = _extractor.ExtractFrames(uploadPath, framesFolder, fpsToExtract: 1);
 
@@ -37,11 +37,11 @@ namespace MARecognition.Controllers
         }
 
         [HttpPost("analyze")]
-        public async Task<IActionResult> AnalyzeVideo([FromQuery] string modelName = "gemma3:1b")
+        public async Task<IActionResult> AnalyzeVideo([FromQuery] string modelName = "llava:latest")
         {
             string framesFolder = Path.Combine("data", "frames");
 
-            // Controllo cartella frame
+            // check frame folders
             if (!Directory.Exists(framesFolder))
                 return BadRequest("No frames found. Upload and extract frames first.");
 
@@ -49,10 +49,10 @@ namespace MARecognition.Controllers
             if (frameFiles.Length < 3)
                 return BadRequest("Not enough frames to analyze (minimum 3 required).");
 
-            // Instanzia VideoAnalyzer
+            // VideoAnalyzer
             var analyzer = new VideoAnalyzerService(modelName);
 
-            // Chiama il servizio
+            // call service
             var eventLog = await analyzer.RecognizeVideoActions(framesFolder, frameFiles.Length);
 
             return Ok(eventLog);

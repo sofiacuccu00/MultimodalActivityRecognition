@@ -13,18 +13,17 @@
 
             public SemanticKernelService()
             {
-                // Crea Kernel
+                // Create Kernel
                 var builder = Kernel.CreateBuilder();
 
-                // Modello Gemma
+                // Model selection
                 builder.AddOllamaChatCompletion(
-                    modelId: "gemma3:1b",
+                    modelId: "llava:latest",
                     endpoint: new Uri("http://localhost:11434")
                 );
 
                 _kernel = builder.Build();
 
-                // Ottieni Chat Service
                 _chatService = _kernel.GetRequiredService<IChatCompletionService>();
             }
 
