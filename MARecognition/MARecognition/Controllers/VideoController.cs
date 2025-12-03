@@ -1,7 +1,6 @@
 ﻿using MARecognition.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 namespace MARecognition.Controllers
 {
     [ApiController]
@@ -29,7 +28,7 @@ namespace MARecognition.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            // Frame extraction
+            // Estrazione frame
             string framesFolder = Path.Combine("data", "frames");
             int frameCount = _extractor.ExtractFrames(uploadPath, framesFolder, fpsToExtract: 1);
 
@@ -41,7 +40,6 @@ namespace MARecognition.Controllers
         {
             string framesFolder = Path.Combine("data", "frames");
 
-            // check frame folders
             if (!Directory.Exists(framesFolder))
                 return BadRequest("No frames found. Upload and extract frames first.");
 
@@ -49,15 +47,15 @@ namespace MARecognition.Controllers
             if (frameFiles.Length < 3)
                 return BadRequest("Not enough frames to analyze (minimum 3 required).");
 
-            // VideoAnalyzer
+            // VideoAnalyzerService con accorpamento azioni
             var analyzer = new VideoAnalyzerService(modelName);
+            var eventIntervals = await analyzer.RecognizeVideoActions(framesFolder, frameFiles.Length);
 
-            // call service
-            var eventLog = await analyzer.RecognizeVideoActions(framesFolder, frameFiles.Length);
-
-            return Ok(eventLog);
+            // Restituisci direttamente intervalli accorpati
+            return Ok(eventIntervals);
         }
-    }
+
+        }
 
 
 }
