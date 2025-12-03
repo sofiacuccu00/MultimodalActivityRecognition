@@ -17,9 +17,7 @@ namespace MARecognition.Controllers
             _fusionService = fusionService;
         }
 
-        /// <summary>
-        /// Analizza video e audio e restituisce log multimodale
-        /// </summary>
+        // analyze video and audio and give the multimodal log
         [HttpPost("analyze")]
         public async Task<IActionResult> Analyze()
         {

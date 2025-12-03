@@ -8,9 +8,8 @@ namespace MARecognition.Services
 {
     public class EventLogManagerService
     {
-        /// <summary>
-        /// Scrive la lista di EventLogItem in un CSV.
-        /// </summary>
+
+        // write EventLogItem list in a CSV
         public void WriteEventLog(List<EventLogItem> items, string filePath)
         {
             if (items == null || items.Count == 0)
@@ -25,9 +24,7 @@ namespace MARecognition.Services
             }
         }
 
-        /// <summary>
-        /// Rimuove le azioni consecutive duplicate.
-        /// </summary>
+        // Removes duplicate consecutive actions 
         public List<EventLogItem> ClearEventLog(List<EventLogItem> items)
         {
             if (items == null || items.Count == 0)
@@ -51,10 +48,7 @@ namespace MARecognition.Services
         }
 
 
-        /// <summary>
-        /// Crea il log multimodale combinando video e audio.
-        /// Togli le azioni video dopo il drop audio e unisci con l'evento drop audio.
-        /// </summary>
+        //Creates multimodal log combining video and audio
         public List<EventLogItem> CreateMultimodalEventLog(
             List<EventLogItem> videoItems,
             double audioDropTime,
@@ -63,20 +57,20 @@ namespace MARecognition.Services
             if (videoItems == null)
                 throw new ArgumentNullException(nameof(videoItems));
 
-            // Accorpa duplicati consecutivi
+            // Merge consecutive duplicates
             var cleanedVideo = ClearEventLog(videoItems);
 
-            // Tieni solo azioni video precedenti al drop audio
+            // Only keep video actions prior to the audio drop
             var filteredVideo = cleanedVideo
                 .Where(v => v.Timestamp < Math.Floor(audioDropTime))
                 .ToList();
 
-            // Crea evento drop audio
+            // Created an drop audio event
             var audioEvent = new EventLogItem(audioActivityName, (int)Math.Floor(audioDropTime));
 
 
 
-            // Unisci e ordina per timestamp
+            // Merge and sort by timestamp 
             var finalLog = filteredVideo.Append(audioEvent)
                                         .OrderBy(e => e.Timestamp)
                                         .ToList();

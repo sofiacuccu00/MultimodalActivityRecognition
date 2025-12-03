@@ -14,7 +14,7 @@ namespace MARecognition.Controllers
             _audioService = audioService;
         }
 
-        // Upload dell'audio (salva il file su disco)
+        //audio upload
         [HttpPost("upload")]
         public async Task<IActionResult> UploadAudio(IFormFile file)
         {
@@ -31,7 +31,7 @@ namespace MARecognition.Controllers
             return Ok(new { message = "Audio uploaded", path });
         }
 
-        // Rilevazione del drop direttamente da file caricato
+        // drop detection directly from the file
         [HttpPost("detect-drop")]
         public async Task<IActionResult> DetectDrop(IFormFile file)
         {
@@ -47,7 +47,7 @@ namespace MARecognition.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            // Chiama il servizio per rilevare il drop
+            // call the service for detection drop
             double dropTime = _audioService.DetectDropEvent(path);
 
             return Ok(new { dropTimeInSeconds = dropTime });

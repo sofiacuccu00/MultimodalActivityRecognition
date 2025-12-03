@@ -28,7 +28,7 @@ namespace MARecognition.Controllers
                 await file.CopyToAsync(stream);
             }
 
-            // Estrazione frame
+            // Extraction frames
             string framesFolder = Path.Combine("data", "frames");
             int frameCount = _extractor.ExtractFrames(uploadPath, framesFolder, fpsToExtract: 1);
 
@@ -47,11 +47,11 @@ namespace MARecognition.Controllers
             if (frameFiles.Length < 3)
                 return BadRequest("Not enough frames to analyze (minimum 3 required).");
 
-            // VideoAnalyzerService con accorpamento azioni
+            // VideoAnalyzerService 
             var analyzer = new VideoAnalyzerService(modelName);
             var eventIntervals = await analyzer.RecognizeVideoActions(framesFolder, frameFiles.Length);
 
-            // Restituisci direttamente intervalli accorpati
+            // Return merged ranges 
             return Ok(eventIntervals);
         }
 

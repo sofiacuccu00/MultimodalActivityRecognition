@@ -111,7 +111,7 @@ namespace MARecognition.Services
                 results.Add(new EventLogItem(action, i));
             }
 
-            // Accorpa le azioni consecutive
+            // Merge consecutive actions
             return MergeConsecutiveActions(results);
         }
 

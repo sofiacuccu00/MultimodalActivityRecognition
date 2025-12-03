@@ -25,37 +25,32 @@ namespace MARecognition.Services
             _eventLogManager = eventLogManager;
         }
 
-        /// <summary>
-        /// Analizza video e audio e restituisce il log finale multimodale.
-        /// </summary>
-        /// <param name="videoPath">Percorso video (mp4)</param>
-        /// <param name="audioPath">Percorso audio (wav)</param>
-        /// <param name="framesFolder">Cartella dove salvare i frame</param>
-        /// <returns>Log multimodale pronto per process mining</returns>
+
+        // Analyses video and audio and returns the final multimodal log
         public async Task<List<EventLogItem>> AnalyzeAsync(string videoPath, string audioPath, string framesFolder)
         {
-            // 1️⃣ Estrai i frame dal video
+            // frames extraction
             int totalFrames = _frameExtractor.ExtractFrames(videoPath, framesFolder, fpsToExtract: 1);
             if (totalFrames < 3)
                 return new List<EventLogItem>(); // non abbastanza frame
 
-            // 2️⃣ Analizza i frame (Video)
+            // video frames analisys
             var videoIntervals = await _videoAnalyzer.RecognizeVideoActions(framesFolder, totalFrames);
 
-            // 3️⃣ Trasforma EventLogInterval -> EventLogItem
+            // trasforming EventLogInterval -> EventLogItem
             var videoItems = videoIntervals
                 .Select(interval => new EventLogItem(
-                    activity: interval.Activity.Trim().ToLower().TrimEnd('.', ' '), // rimuove maiuscole e punti
+                    activity: interval.Activity.Trim().ToLower().TrimEnd('.', ' '), // deletes capital letters and periods
                     timestamp: interval.StartTimestamp,
                     caseId: null
                 ))
                 .ToList();
 
 
-            // 4️⃣ Analizza l’audio (Drop detection)
+            // Audioanalyse (Drop detection)
             double dropTime = _audioService.DetectDropEvent(audioPath);
 
-            // 5️⃣ Crea log multimodale finale (video + drop audio)
+            // Creates final multimodal log (video + drop audio)
             var finalLog = _eventLogManager.CreateMultimodalEventLog(videoItems, dropTime);
 
             return finalLog;

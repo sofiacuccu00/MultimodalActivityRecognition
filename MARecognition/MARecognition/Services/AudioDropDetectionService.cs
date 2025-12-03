@@ -8,12 +8,9 @@ namespace MARecognition.Services
 {
     public class AudioDropDetectionService
     {
-        /// <summary>
-        /// Detect the loudest impact ("drop") in a WAV file.
-        /// </summary>
-        /// <param name="audioFilePath">Path to WAV file</param>
-        /// <param name="windowMs">Smoothing window in milliseconds</param>
-        /// <returns>Time in seconds of the loudest sound event</returns>
+
+        //Detect the loudest impact ("drop") in a WAV file.
+        // returns Time in seconds of the loudest sound event
         public double DetectDropEvent(string audioFilePath, int windowMs = 10)
         {
             if (!File.Exists(audioFilePath))
@@ -69,9 +66,7 @@ namespace MARecognition.Services
             return peakTime;
         }
 
-        /// <summary>
-        /// Write detected drop times or activities to a text file.
-        /// </summary>
+        // Write detected drop times or activities to a text file.
         public void WriteActivitiesToFile(List<string> activities, string outputFilePath)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath) ?? "");
