@@ -51,31 +51,19 @@ namespace MARecognition.Services
         //Creates multimodal log combining video and audio
         public List<EventLogItem> CreateMultimodalEventLog(
             List<EventLogItem> videoItems,
-            double audioDropTime,
-            string audioActivityName = "drop")
+            List<EventLogItem> audioItems)
         {
-            if (videoItems == null)
-                throw new ArgumentNullException(nameof(videoItems));
+            if (videoItems == null) videoItems = new List<EventLogItem>();
+            if (audioItems == null) audioItems = new List<EventLogItem>();
 
-            // Merge consecutive duplicates
-            var cleanedVideo = ClearEventLog(videoItems);
+            // Merge and sort per timestamp
+            var finalLog = videoItems.Concat(audioItems)
+                                     .OrderBy(e => e.Timestamp)
+                                     .ToList();
 
-            // Only keep video actions prior to the audio drop
-            var filteredVideo = cleanedVideo
-                .Where(v => v.Timestamp < Math.Floor(audioDropTime))
-                .ToList();
-
-            // Created an drop audio event
-            var audioEvent = new EventLogItem(audioActivityName, (int)Math.Floor(audioDropTime));
-
-
-
-            // Merge and sort by timestamp 
-            var finalLog = filteredVideo.Append(audioEvent)
-                                        .OrderBy(e => e.Timestamp)
-                                        .ToList();
-
-            return finalLog;
+            // removes duplicates
+            return ClearEventLog(finalLog);
         }
+
     }
 }

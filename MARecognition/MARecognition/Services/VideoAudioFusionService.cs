@@ -1,6 +1,7 @@
 ﻿using MARecognition.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,48 +11,50 @@ namespace MARecognition.Services
     {
         private readonly FrameExtractorService _frameExtractor;
         private readonly VideoAnalyzerService _videoAnalyzer;
-        private readonly AudioDropDetectionService _audioService;
+        private readonly AudioTranscriptionService _audioTranscription;
+        private readonly AudioActivityRecoService _audioRecognition;
         private readonly EventLogManagerService _eventLogManager;
 
         public VideoAudioFusionService(
             FrameExtractorService frameExtractor,
             VideoAnalyzerService videoAnalyzer,
-            AudioDropDetectionService audioService,
+            AudioTranscriptionService audioTranscription,
+            AudioActivityRecoService audioRecognition,
             EventLogManagerService eventLogManager)
         {
             _frameExtractor = frameExtractor;
             _videoAnalyzer = videoAnalyzer;
-            _audioService = audioService;
+            _audioTranscription = audioTranscription;
+            _audioRecognition = audioRecognition;
             _eventLogManager = eventLogManager;
         }
 
 
-        // Analyses video and audio and returns the final multimodal log
         public async Task<List<EventLogItem>> AnalyzeAsync(string videoPath, string audioPath, string framesFolder)
         {
-            // frames extraction
+            // Video extract frames
             int totalFrames = _frameExtractor.ExtractFrames(videoPath, framesFolder, fpsToExtract: 1);
             if (totalFrames < 3)
-                return new List<EventLogItem>(); // non abbastanza frame
+                return new List<EventLogItem>();
 
-            // video frames analisys
+            // Video recognition
             var videoIntervals = await _videoAnalyzer.RecognizeVideoActions(framesFolder, totalFrames);
-
-            // trasforming EventLogInterval -> EventLogItem
             var videoItems = videoIntervals
                 .Select(interval => new EventLogItem(
-                    activity: interval.Activity.Trim().ToLower().TrimEnd('.', ' '), // deletes capital letters and periods
+                    activity: interval.Activity.Trim().ToLower().TrimEnd('.', ' '),
                     timestamp: interval.StartTimestamp,
                     caseId: null
                 ))
                 .ToList();
 
+            // Audio transcription
+            string transcription = await _audioTranscription.TranscribeAsync(audioPath);
 
-            // Audioanalyse (Drop detection)
-            double dropTime = _audioService.DetectDropEvent(audioPath);
+            // Audio activity recognition
+            var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription, startTimeSeconds: 0);
 
-            // Creates final multimodal log (video + drop audio)
-            var finalLog = _eventLogManager.CreateMultimodalEventLog(videoItems, dropTime);
+            // Merge
+            var finalLog = _eventLogManager.CreateMultimodalEventLog(videoItems, audioItems);
 
             return finalLog;
         }

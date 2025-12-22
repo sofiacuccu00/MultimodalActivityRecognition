@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MARecognition.Services;
+﻿using MARecognition.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MARecognition.Controllers
 {
@@ -7,14 +7,17 @@ namespace MARecognition.Controllers
     [Route("api/[controller]")]
     public class AudioController : ControllerBase
     {
-        private readonly AudioDropDetectionService _audioService;
+        private readonly AudioTranscriptionService _audioTranscription;
+        private readonly AudioActivityRecoService _audioRecognition;
 
-        public AudioController(AudioDropDetectionService audioService)
+        public AudioController(
+            AudioTranscriptionService audioTranscription,
+            AudioActivityRecoService audioRecognition)
         {
-            _audioService = audioService;
+            _audioTranscription = audioTranscription;
+            _audioRecognition = audioRecognition;
         }
 
-        //audio upload
         [HttpPost("upload")]
         public async Task<IActionResult> UploadAudio(IFormFile file)
         {
@@ -25,15 +28,14 @@ namespace MARecognition.Controllers
             Directory.CreateDirectory(folder);
 
             string path = Path.Combine(folder, file.FileName);
-            using var stream = new FileStream(path, FileMode.Create);
-            await file.CopyToAsync(stream);
+            using (var stream = new FileStream(path, FileMode.Create))
+                await file.CopyToAsync(stream);
 
             return Ok(new { message = "Audio uploaded", path });
         }
 
-        // drop detection directly from the file
-        [HttpPost("detect-drop")]
-        public async Task<IActionResult> DetectDrop(IFormFile file)
+        [HttpPost("analyze")]
+        public async Task<IActionResult> AnalyzeAudio(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
@@ -43,14 +45,13 @@ namespace MARecognition.Controllers
 
             string path = Path.Combine(folder, file.FileName);
             using (var stream = new FileStream(path, FileMode.Create))
-            {
                 await file.CopyToAsync(stream);
-            }
 
-            // call the service for detection drop
-            double dropTime = _audioService.DetectDropEvent(path);
+            
+            string transcription = await _audioTranscription.TranscribeAsync(path);
+            var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription);
 
-            return Ok(new { dropTimeInSeconds = dropTime });
+            return Ok(audioItems);
         }
     }
 }
