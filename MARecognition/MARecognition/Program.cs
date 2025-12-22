@@ -1,31 +1,39 @@
 using MARecognition.Services;
 using MARecognition.Services.MultimodalActivityRecognition_CSD.Services;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// increase upload limit
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 524288000; // 500 MB
+    options.Limits.MaxRequestBodySize = 524_288_000; // 500 MB
 });
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 524288000; // 500 MB
+    options.MultipartBodyLengthLimit = 524_288_000; // 500 MB
 });
-// Add services to the container.
 
-builder.Services.AddControllers();
+// Servizi
 builder.Services.AddSingleton<SemanticKernelService>();
 builder.Services.AddSingleton<FrameExtractorService>();
+builder.Services.AddSingleton<AudioDropDetectionService>();
+builder.Services.AddSingleton<VideoAnalyzerService>(sp =>
+    new VideoAnalyzerService("llava:latest"));
+builder.Services.AddSingleton<EventLogManagerService>();
+builder.Services.AddSingleton<VideoAudioFusionService>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+// Controllers + Swagger
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -33,9 +41,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
