@@ -29,4 +29,26 @@ namespace MARecognition.Controllers
             return Ok(result);
         }
     }
+
+    [ApiController]
+    [Route("api/download")]
+    public class DownloadController : ControllerBase
+    {
+        [HttpGet("csv")]
+        public IActionResult DownloadCsv()
+        {
+            string path = Path.Combine("output", "multimodal_log.csv");
+
+            if (!System.IO.File.Exists(path))
+                return NotFound("CSV non ancora generato");
+
+            return File(
+                System.IO.File.ReadAllBytes(path),
+                "text/csv",
+                "multimodal_log.csv"
+            );
+        }
+    }
+
+
 }
