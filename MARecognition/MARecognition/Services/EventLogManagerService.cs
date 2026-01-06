@@ -16,12 +16,13 @@ namespace MARecognition.Services
                 throw new InvalidOperationException("No items to write.");
 
             using var writer = new StreamWriter(filePath);
-            writer.WriteLine("case_id,activity,timestamp");
+            writer.WriteLine("activity,timestamp,case_id");
 
             foreach (var item in items)
             {
-                writer.WriteLine($"{item.CaseId},{item.Activity},{item.Timestamp}");
+                writer.WriteLine($"{item.Activity},{item.Timestamp},{item.CaseId}");
             }
+
         }
 
         // Removes duplicate consecutive actions 

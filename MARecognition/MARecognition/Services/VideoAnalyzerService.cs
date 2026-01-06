@@ -106,6 +106,7 @@ namespace MARecognition.Services
 
                 var response = await chatService.GetChatMessageContentsAsync(chatHistory);
                 string action = response[0].Content.Trim();
+                
 
                 Console.WriteLine($"Frames {i:00000}-{i + 2:00000} → {action}");
                 results.Add(new EventLogItem(action, i));

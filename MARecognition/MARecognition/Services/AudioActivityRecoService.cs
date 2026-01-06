@@ -11,7 +11,7 @@ namespace MARecognition.Services
         private readonly Kernel _kernel;
         private readonly IChatCompletionService _chatService;
 
-        public AudioActivityRecoService(string modelName = "llava:latest")
+        public AudioActivityRecoService(string modelName = "karanchopda333/whisper")
         {
             
             var builder = Kernel.CreateBuilder();

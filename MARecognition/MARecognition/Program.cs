@@ -25,6 +25,8 @@ builder.Services.AddSingleton<EventLogManagerService>();
 // Nuovi servizi audio
 builder.Services.AddSingleton<AudioTranscriptionService>();
 builder.Services.AddSingleton<AudioActivityRecoService>();
+builder.Services.AddSingleton<AudioPeakDetectService>();
+
 
 // Fusion multimodale
 builder.Services.AddSingleton<VideoAudioFusionService>(sp =>
