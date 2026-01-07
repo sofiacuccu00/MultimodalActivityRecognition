@@ -96,15 +96,10 @@ This is the **core** of the project.
 .NET 8+
 Semantic Kernel
 Ollama
-FFmpeg
 
 ### Recommended models on Ollama
 
-- `llava`
-- `phi3-vision`
-- `moondream`
-- (if available) `llama-vision`
-
+- `llava:latest`
 ---
 
 ## 📎 Reference Abstract
