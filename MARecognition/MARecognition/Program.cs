@@ -2,6 +2,7 @@ using MARecognition.Services;
 using MARecognition.Services.MultimodalActivityRecognition_CSD.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using MARecognition.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddSingleton<VideoAnalyzerService>(sp =>
     new VideoAnalyzerService("llava:latest"));
 builder.Services.AddSingleton<EventLogManagerService>();
 builder.Services.AddSingleton<VideoAudioFusionService>();
+
+builder.Services.AddScoped<IFusionService, FusionService>();
 
 
 

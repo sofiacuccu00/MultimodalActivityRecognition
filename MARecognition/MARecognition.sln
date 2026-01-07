@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36603.0 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MARecognition", "MARecognition\MARecognition.csproj", "{BBEAFA94-901E-4302-B1E3-21A014D013A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MARecognition.Tests", "MARecognition.Tests\MARecognition.Tests.csproj", "{A34C242E-EB97-4A42-8B5D-2C51E654F37E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BBEAFA94-901E-4302-B1E3-21A014D013A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBEAFA94-901E-4302-B1E3-21A014D013A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBEAFA94-901E-4302-B1E3-21A014D013A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A34C242E-EB97-4A42-8B5D-2C51E654F37E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A34C242E-EB97-4A42-8B5D-2C51E654F37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A34C242E-EB97-4A42-8B5D-2C51E654F37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A34C242E-EB97-4A42-8B5D-2C51E654F37E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
