@@ -27,7 +27,19 @@
                 _chatService = _kernel.GetRequiredService<IChatCompletionService>();
             }
 
-            public async Task<string> AskAsync(string question)
+            /* public async Task<string> AskAsync(string question)
+            {
+                var chatHistory = new ChatHistory();
+                chatHistory.AddUserMessage(question);
+
+                var result = await _chatService.GetChatMessageContentAsync(
+                    chatHistory,
+                    kernel: _kernel
+                );
+
+                return result.ToString();
+            }*/
+            public virtual async Task<string> AskAsync(string question)
             {
                 var chatHistory = new ChatHistory();
                 chatHistory.AddUserMessage(question);

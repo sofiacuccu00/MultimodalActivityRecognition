@@ -2,6 +2,7 @@ using MARecognition.Services;
 using MARecognition.Services.MultimodalActivityRecognition_CSD.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using MARecognition.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddSingleton<EventLogManagerService>();
 builder.Services.AddSingleton<AudioTranscriptionService>();
 builder.Services.AddSingleton<AudioActivityRecoService>();
 builder.Services.AddSingleton<AudioPeakDetectService>();
+
+builder.Services.AddScoped<IFusionService, FusionService>();
 
 
 // Fusion multimodale
