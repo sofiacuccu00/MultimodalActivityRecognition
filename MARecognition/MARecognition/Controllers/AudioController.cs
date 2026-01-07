@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MARecognition.Services;
+﻿using MARecognition.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Threading.Tasks;
+using MARecognition.Models;
 
 namespace MARecognition.Controllers
 {
@@ -7,33 +11,23 @@ namespace MARecognition.Controllers
     [Route("api/[controller]")]
     public class AudioController : ControllerBase
     {
-        private readonly AudioDropDetectionService _audioService;
+        private readonly AudioTranscriptionService _audioTranscription;
+        private readonly AudioActivityRecoService _audioRecognition;
+        private readonly AudioPeakDetectService _peakDetect;
 
-        public AudioController(AudioDropDetectionService audioService)
+        public AudioController(
+            AudioTranscriptionService audioTranscription,
+            AudioActivityRecoService audioRecognition,
+            AudioPeakDetectService peakDetect)
         {
-            _audioService = audioService;
+            _audioTranscription = audioTranscription;
+            _audioRecognition = audioRecognition;
+            _peakDetect = peakDetect;
         }
 
-        //audio upload
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadAudio(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
-
-            string folder = Path.Combine("audio");
-            Directory.CreateDirectory(folder);
-
-            string path = Path.Combine(folder, file.FileName);
-            using var stream = new FileStream(path, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            return Ok(new { message = "Audio uploaded", path });
-        }
-
-        // drop detection directly from the file
-        [HttpPost("detect-drop")]
-        public async Task<IActionResult> DetectDrop(IFormFile file)
+        // Upload e trascrizione
+        [HttpPost("transcribe")]
+        public async Task<IActionResult> TranscribeAudio(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
@@ -43,14 +37,80 @@ namespace MARecognition.Controllers
 
             string path = Path.Combine(folder, file.FileName);
             using (var stream = new FileStream(path, FileMode.Create))
-            {
                 await file.CopyToAsync(stream);
+
+            string transcription;
+            try
+            {
+                transcription = await _audioTranscription.TranscribeAsync(path);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
             }
 
-            // call the service for detection drop
-            double dropTime = _audioService.DetectDropEvent(path);
+            return Ok(new { transcription, path });
+        }
 
-            return Ok(new { dropTimeInSeconds = dropTime });
+        // Upload + analisi attività
+        [HttpPost("analyze")]
+        public async Task<IActionResult> AnalyzeAudio(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            string folder = Path.Combine("audio");
+            Directory.CreateDirectory(folder);
+
+            string path = Path.Combine(folder, file.FileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+                await file.CopyToAsync(stream);
+
+            string transcription;
+            try
+            {
+                transcription = await _audioTranscription.TranscribeAsync(path);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+
+            // Riconoscimento attività dal testo
+            var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription);
+
+            return Ok(audioItems);
+        }
+
+
+        [HttpPost("peak")]
+        public async Task<IActionResult> DetectPeak(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            string folder = Path.Combine("audio");
+            Directory.CreateDirectory(folder);
+
+            string path = Path.Combine(folder, file.FileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+                await file.CopyToAsync(stream);
+
+            double peakTimestamp;
+            try
+            {
+                peakTimestamp = _peakDetect.GetLoudestTimestamp(path);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+
+            return Ok(new
+            {
+                peakTimestamp, // in secondi
+                path
+            });
         }
     }
 }

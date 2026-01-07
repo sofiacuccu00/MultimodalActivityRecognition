@@ -1,0 +1,22 @@
+activity,timestamp,case_id
+grasp,0,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+drop,0,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+pick,1,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+the robot is currently holding an object mid-air without movement. object suspended, gripper closed,2,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+hold,3,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+grasp,6,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+the robot's current action in the sequence of images is "drop.",7,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+drop,8,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+idle,10,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+lower,12,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+pick,17,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+grasp,18,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+pick,20,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+drop,21,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+hold,22,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+lower,24,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+drop,30,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+hold,31,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+idle,32,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+grasp,33,ec4e9055-8c1b-4279-ba93-f780ed5c6373
+lower,35,ec4e9055-8c1b-4279-ba93-f780ed5c6373

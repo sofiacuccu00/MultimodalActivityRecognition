@@ -6,7 +6,7 @@ using MARecognition.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// increase upload limit
+// Increase upload limit
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 524_288_000; // 500 MB
@@ -19,15 +19,27 @@ builder.Services.Configure<FormOptions>(options =>
 // Servizi
 builder.Services.AddSingleton<SemanticKernelService>();
 builder.Services.AddSingleton<FrameExtractorService>();
-builder.Services.AddSingleton<AudioDropDetectionService>();
 builder.Services.AddSingleton<VideoAnalyzerService>(sp =>
     new VideoAnalyzerService("llava:latest"));
 builder.Services.AddSingleton<EventLogManagerService>();
-builder.Services.AddSingleton<VideoAudioFusionService>();
+
+// Nuovi servizi audio
+builder.Services.AddSingleton<AudioTranscriptionService>();
+builder.Services.AddSingleton<AudioActivityRecoService>();
+builder.Services.AddSingleton<AudioPeakDetectService>();
 
 builder.Services.AddScoped<IFusionService, FusionService>();
 
 
+// Fusion multimodale
+builder.Services.AddSingleton<VideoAudioFusionService>(sp =>
+    new VideoAudioFusionService(
+        sp.GetRequiredService<FrameExtractorService>(),
+        sp.GetRequiredService<VideoAnalyzerService>(),
+        sp.GetRequiredService<AudioTranscriptionService>(),
+        sp.GetRequiredService<AudioActivityRecoService>(),
+        sp.GetRequiredService<EventLogManagerService>()
+    ));
 
 // Controllers + Swagger
 builder.Services.AddControllers();
