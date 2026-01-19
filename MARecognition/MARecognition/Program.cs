@@ -15,20 +15,20 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 524_288_000; // 500 MB
 });
 
-// Servizi
+// Services
 builder.Services.AddSingleton<SemanticKernelService>();
 builder.Services.AddSingleton<FrameExtractorService>();
 builder.Services.AddSingleton<VideoAnalyzerService>(sp =>
     new VideoAnalyzerService("llava:latest"));
 builder.Services.AddSingleton<EventLogManagerService>();
 
-// Nuovi servizi audio
+// New audio services
 builder.Services.AddSingleton<AudioTranscriptionService>();
 builder.Services.AddSingleton<AudioActivityRecoService>();
 builder.Services.AddSingleton<AudioPeakDetectService>();
 
 
-// Fusion multimodale
+// multimodal fusion
 builder.Services.AddSingleton<VideoAudioFusionService>(sp =>
     new VideoAudioFusionService(
         sp.GetRequiredService<FrameExtractorService>(),

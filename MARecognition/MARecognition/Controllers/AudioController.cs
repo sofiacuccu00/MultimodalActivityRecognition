@@ -25,7 +25,7 @@ namespace MARecognition.Controllers
             _peakDetect = peakDetect;
         }
 
-        // Upload e trascrizione
+        // Upload and trascription
         [HttpPost("transcribe")]
         public async Task<IActionResult> TranscribeAudio(IFormFile file)
         {
@@ -52,7 +52,7 @@ namespace MARecognition.Controllers
             return Ok(new { transcription, path });
         }
 
-        // Upload + analisi attività
+        // Activity analization
         [HttpPost("analyze")]
         public async Task<IActionResult> AnalyzeAudio(IFormFile file)
         {
@@ -76,7 +76,7 @@ namespace MARecognition.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
 
-            // Riconoscimento attività dal testo
+            // Activity recognition by the trascription
             var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription);
 
             return Ok(audioItems);
@@ -108,7 +108,7 @@ namespace MARecognition.Controllers
 
             return Ok(new
             {
-                peakTimestamp, // in secondi
+                peakTimestamp, // in seconds
                 path
             });
         }

@@ -24,11 +24,11 @@ namespace MARecognition.Services
             if (!File.Exists(audioFilePath))
                 throw new FileNotFoundException(audioFilePath);
 
-            // payload con percorso file locale
+            // payload with local file path
             var payload = new
             {
                 model = "karanchopda333/whisper",
-                audio_file = Path.GetFullPath(audioFilePath), // percorso assoluto
+                audio_file = Path.GetFullPath(audioFilePath), 
                 prompt = "Transcribe the audio accurately. Describe any non-verbal sounds briefly.",
                 stream = false
             };

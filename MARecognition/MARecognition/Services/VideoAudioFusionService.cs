@@ -32,15 +32,15 @@ namespace MARecognition.Services
 
         public async Task<List<EventLogItem>> AnalyzeAsync(string videoPath, string audioPath, string framesFolder)
         {
-            // 1️⃣ Estrarre frames dal video
+            // video frames extraction
             int totalFrames = _frameExtractor.ExtractFrames(videoPath, framesFolder, fpsToExtract: 1);
             if (totalFrames < 3)
                 return new List<EventLogItem>();
 
-            // 2️⃣ Riconoscimento azioni video
+            // video recognition
             var videoIntervals = await _videoAnalyzer.RecognizeVideoActions(framesFolder, totalFrames);
 
-            // Genera un CaseId unico per questo video/audio
+            // CaseId generation for that video
             var caseId = Guid.NewGuid().ToString();
 
             var videoItems = videoIntervals
@@ -51,25 +51,25 @@ namespace MARecognition.Services
                 ))
                 .ToList();
 
-            // 3️⃣ Trascrizione audio
+            // audio trascription
             string transcription = await _audioTranscription.TranscribeAsync(audioPath);
 
-            // 4️⃣ Riconoscimento attività audio
+            // audio recognition
             var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription, startTimeSeconds: 0);
 
-            // Assegna lo stesso CaseId anche alle attività audio
+            // CaseId assignement for that audio
             audioItems.ForEach(item => item.CaseId = caseId);
 
-            // 5️⃣ Fusion multimodale e rimozione duplicati
+            // multimodal Fusion and duplicates removal
             var finalLog = _eventLogManager.CreateMultimodalEventLog(videoItems, audioItems);
 
-            // 6️⃣ Scrittura CSV pronto per download
-            Directory.CreateDirectory("output"); // crea cartella se non esiste
+            // creation of CSV file
+            Directory.CreateDirectory("output"); // directory creation for the csv file
             string csvPath = Path.Combine("output", "multimodal_log.csv");
             _eventLogManager.WriteEventLog(finalLog, csvPath);
 
 
-            // 7️⃣ Ritorna il log finale
+            // returns final log
             return finalLog;
         }
 

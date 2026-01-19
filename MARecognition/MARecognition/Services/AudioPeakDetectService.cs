@@ -35,7 +35,7 @@ namespace MARecognition.Services
                 totalSamplesRead += samplesRead;
             }
 
-            // Converti sample -> secondi
+            // Converts sample in seconds
             double seconds =
                 (double)maxSamplePosition / reader.WaveFormat.SampleRate;
 
