@@ -35,6 +35,7 @@ builder.Services.AddSingleton<VideoAudioFusionService>(sp =>
         sp.GetRequiredService<VideoAnalyzerService>(),
         sp.GetRequiredService<AudioTranscriptionService>(),
         sp.GetRequiredService<AudioActivityRecoService>(),
+        sp.GetRequiredService<AudioPeakDetectService>(),
         sp.GetRequiredService<EventLogManagerService>()
     ));
 

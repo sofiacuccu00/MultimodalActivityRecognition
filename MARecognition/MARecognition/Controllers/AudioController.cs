@@ -53,7 +53,7 @@ namespace MARecognition.Controllers
         }
 
         // Activity analization
-        [HttpPost("analyze")]
+        /*[HttpPost("analyze")]
         public async Task<IActionResult> AnalyzeAudio(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -80,7 +80,7 @@ namespace MARecognition.Controllers
             var audioItems = await _audioRecognition.RecognizeActivitiesAsync(transcription);
 
             return Ok(audioItems);
-        }
+        }*/
 
 
         [HttpPost("peak")]
